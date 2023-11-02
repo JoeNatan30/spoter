@@ -32,7 +32,7 @@ ENTITY = "joenatan30" #c-vasquezr
 def get_default_args():
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument("--experiment_name", type=str, default="lsa_64_spoter",
+    parser.add_argument("--experiment_name", type=str, default="AEC_DGI305-Doble_descent",
                         help="Name of the experiment after which the logs and plots will be named")
     parser.add_argument("--num_classes", type=int, default=50, help="Number of classes to be recognized by the model")
     parser.add_argument("--hidden_dim", type=int, default=108,
@@ -94,7 +94,7 @@ def get_default_args():
 def lr_lambda(current_step, optim):
 
     #lr_rate = 0.0003
-    lr_rate = 0.00005
+    lr_rate = 0.0005
     '''
     if current_step <= 30:
         lr_rate = current_step/30000  # Función lineal
@@ -216,7 +216,7 @@ def train(args):
     
     #class_weight = torch.FloatTensor([1/train_set.label_freq[i] for i in range(args.num_classes)]).to(device)
     
-    cel_criterion = nn.CrossEntropyLoss(label_smoothing=0.1)#, weight=class_weight)
+    cel_criterion = nn.CrossEntropyLoss()#label_smoothing=0.1)#, weight=class_weight)
     #cel_criterion = nn.CrossEntropyLoss()
     
     sgd_optimizer = optim.SGD(slrt_model.parameters(), lr=args.lr)

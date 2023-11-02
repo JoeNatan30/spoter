@@ -267,7 +267,7 @@ def get_dataset_from_hdf5(path,keypoints_model,landmarks_ref,keypoints_number,th
     false_seq_dataset = []
     percentage_dataset = []
     max_consec_dataset = []
-    time.sleep(2)
+
     for index in tqdm.tqdm(list(data.keys())):
         data_video = np.array(data[index]['data'])
         data_label = np.array(data[index]['label']).item().decode('utf-8')
@@ -330,7 +330,7 @@ def get_dataset_from_hdf5(path,keypoints_model,landmarks_ref,keypoints_number,th
     json_file_path = "meaning.json"
     with open(json_file_path, "w") as jsonfile:
         jsonfile.write(json_data)
-    assert 1 == 2
+
     
     print('sorted(set(labels_dataset))  : ',sorted(set(labels_dataset)))
     print('dict_labels_dataset      :',dict_labels_dataset)
