@@ -94,7 +94,7 @@ def get_default_args():
 def lr_lambda(current_step, optim):
 
     #lr_rate = 0.0003
-    lr_rate = 0.0005
+    lr_rate = 0.00005
     '''
     if current_step <= 30:
         lr_rate = current_step/30000  # Función lineal
@@ -132,6 +132,10 @@ def train(args):
         ]
     )
 
+    args.experiment_name = "_".join([args.experiment_name.split('--')[0], 
+                                     f"lr-{args.lr}",
+                                     f"deep-{32}"]) 
+
     run = wandb.init(project=PROJECT_WANDB, 
                      entity=ENTITY,
                      config=args, 
@@ -146,6 +150,8 @@ def train(args):
     device = torch.device("cpu")
     if torch.cuda.is_available():
         device = torch.device(f"cuda:{args.device}")
+
+    
 
     # DATA LOADER
         # Training set
@@ -186,6 +192,7 @@ def train(args):
         slrt_model = SPOTER(num_classes=args.num_classes, hidden_dim=args.hidden_dim)
         checkpoint = torch.load(args.continue_training)
         slrt_model.load_state_dict(checkpoint['model_state_dict'])
+        sgd_optimizer = optim.SGD(slrt_model.parameters(), lr=args.lr)
         sgd_optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         epoch_start = checkpoint['epoch']
 
@@ -209,8 +216,10 @@ def train(args):
 
     # Normal scenario
     else:
-        # Construct the model
         slrt_model = SPOTER(num_classes=args.num_classes, hidden_dim=args.hidden_dim)
+        sgd_optimizer = optim.SGD(slrt_model.parameters(), lr=args.lr)
+    # Construct the model
+        
 
     # Construct the other modules
     
@@ -219,7 +228,7 @@ def train(args):
     cel_criterion = nn.CrossEntropyLoss()#label_smoothing=0.1)#, weight=class_weight)
     #cel_criterion = nn.CrossEntropyLoss()
     
-    sgd_optimizer = optim.SGD(slrt_model.parameters(), lr=args.lr)
+    
     epoch_start = 0
 
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(sgd_optimizer, factor=args.scheduler_factor, patience=args.scheduler_patience)
