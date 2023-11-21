@@ -32,9 +32,9 @@ ENTITY = "joenatan30" #c-vasquezr
 def get_default_args():
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument("--experiment_name", type=str, default="AEC_DGI305-Doble_descent",
+    parser.add_argument("--experiment_name", type=str, default="AEC_DGI305",
                         help="Name of the experiment after which the logs and plots will be named")
-    parser.add_argument("--num_classes", type=int, default=50, help="Number of classes to be recognized by the model")
+    parser.add_argument("--num_classes", type=int, default=38, help="Number of classes to be recognized by the model")
     parser.add_argument("--hidden_dim", type=int, default=108,
                         help="Hidden dimension of the underlying Transformer model")
     parser.add_argument("--seed", type=int, default=379,
@@ -90,7 +90,7 @@ def get_default_args():
 
     return parser
 
-
+# TO MODIFY THE LEARNING RATE
 def lr_lambda(current_step, optim):
 
     #lr_rate = 0.0003
@@ -134,7 +134,7 @@ def train(args):
 
     args.experiment_name = "_".join([args.experiment_name.split('--')[0], 
                                      f"lr-{args.lr}",
-                                     f"deep-{32}"]) 
+                                     f"Nclass-{args.num_classes}"]) 
 
     run = wandb.init(project=PROJECT_WANDB, 
                      entity=ENTITY,
@@ -223,9 +223,11 @@ def train(args):
 
     # Construct the other modules
     
+    # CLASS WEIGHT
     #class_weight = torch.FloatTensor([1/train_set.label_freq[i] for i in range(args.num_classes)]).to(device)
     
-    cel_criterion = nn.CrossEntropyLoss()#label_smoothing=0.1)#, weight=class_weight)
+    # LABEL SMOOTHING IN CRITERION
+    cel_criterion = nn.CrossEntropyLoss(label_smoothing=0.1)#, weight=class_weight)
     #cel_criterion = nn.CrossEntropyLoss()
     
     
@@ -288,6 +290,7 @@ def train(args):
                 'train_acc': train_acc,
                 'train_loss': train_loss,
                 'val_acc': val_acc,
+                'Best_acc': top_val_acc,
                 'val_top5_acc': val_acc_top5,
                 'val_loss':val_loss,
                 'epoch': epoch
